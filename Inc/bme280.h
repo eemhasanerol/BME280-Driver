@@ -1,0 +1,174 @@
+/*
+ * bme280.h
+ * High-level driver API for BME280 sensor
+ */
+
+#ifndef BME280_INC_BME280_H_
+#define BME280_INC_BME280_H_
+
+#include <stdint.h>
+#include "bme280_defs.h"
+
+
+
+/**
+ * @brief Status codes for BME280 driver functions.
+ *
+ * These codes are returned by all public API functions
+ * to indicate success or type of error.
+ */
+typedef enum {
+    BME280_OK      = 0,   /*!< Operation successful */
+    BME280_E_COMM  = -1,  /*!< Communication error (I2C/SPI) */
+    BME280_E_ID    = -2,  /*!< Wrong chip ID */
+    BME280_E_PARAM = -3   /*!< Invalid parameter */
+} bme280_status_t;
+
+
+/* -------------------------------------------------------------------------- */
+/* Device configuration / handle                                              */
+/* -------------------------------------------------------------------------- */
+typedef struct {
+    uint8_t dev_addr;  /* 0x76 or 0x77 */
+
+    uint8_t osr_t;     /*!< Temp oversampling.    Use @ref BME280_OSR_T_* */
+    uint8_t osr_p;     /*!< Pressure oversampling.Use @ref BME280_OSR_P_* */
+    uint8_t osr_h;     /*!< Humidity oversampling.Use @ref BME280_OSR_H_* */
+    uint8_t filter;    /*!< IIR filter.           Use @ref BME280_FILTER_* */
+    uint8_t standby;   /*!< Standby time.         Use @ref BME280_STBY_* */
+    uint8_t mode;      /*!< Power mode.           Use @ref BME280_MODE_* */
+
+    /* I2C callbacks */
+    int32_t (*i2c_read)(uint8_t dev, uint8_t reg, uint8_t *buf, uint16_t len);
+    int32_t (*i2c_write)(uint8_t dev, uint8_t reg, const uint8_t *buf, uint16_t len);
+    void    (*delay_ms)(uint32_t ms);
+
+    bme280_calib_data_t calib;
+    int32_t t_fine;
+} bme280_dev_t;
+
+/* -------------------------------------------------------------------------- */
+/* Raw & compensated data                                                     */
+/* -------------------------------------------------------------------------- */
+typedef struct {
+    int32_t temp_raw;
+    int32_t press_raw;
+    int32_t hum_raw;
+} bme280_raw_t;
+
+typedef struct {
+    float temperature_c;  /* °C */
+    float pressure_pa;    /* Pa */
+    float humidity_rh;    /* %RH */
+} bme280_data_t;
+
+/* -------------------------------------------------------------------------- */
+/* API Prototypes                                                             */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * @brief Initialize BME280 (reset, config, oversampling, filter).
+ * @param[in] dev  Device handle
+ * @retval STATUS_OK     Success
+ * @retval STATUS_ERROR  Null or wrong chip ID
+ */
+bme280_status_t bme280_init(bme280_dev_t *dev);
+
+/**
+ * @brief Load calibration coefficients into dev->calib.
+ * @param[in] dev  Device handle
+ * @retval STATUS_OK     Success
+ * @retval STATUS_ERROR  Comm or null pointer
+ */
+bme280_status_t bme280_load_calibration(bme280_dev_t *dev);
+
+/**
+ * @brief Read raw uncompensated sensor values.
+ * @param[in]  dev  Device handle
+ * @param[out] raw  Raw data struct
+ * @retval STATUS_OK     Success
+ * @retval STATUS_ERROR  Comm error
+ */
+bme280_status_t bme280_read_raw(bme280_dev_t *dev, bme280_raw_t *raw);
+
+/**
+ * @brief Compensate raw temperature.
+ * @param[in]  dev    Device handle
+ * @param[in]  adc_T  Raw temperature (20-bit)
+ * @param[out] t_fine Fine temperature for P/H
+ * @return Temperature in 0.01 °C
+ */
+int32_t bme280_compensate_temperature(bme280_dev_t *dev, int32_t adc_T, int32_t *t_fine);
+
+/**
+ * @brief Compensate raw pressure.
+ * @param[in] dev    Device handle
+ * @param[in] adc_P  Raw pressure (20-bit)
+ * @param[in] t_fine Fine temperature
+ * @return Pressure in Pa (Q24.8 format)
+ */
+uint32_t bme280_compensate_pressure(bme280_dev_t *dev, int32_t adc_P, int32_t t_fine);
+
+/**
+ * @brief Compensate raw humidity.
+ * @param[in] dev    Device handle
+ * @param[in] adc_H  Raw humidity (16-bit)
+ * @param[in] t_fine Fine temperature
+ * @return Humidity in %RH (Q22.10 format)
+ */
+uint32_t bme280_compensate_humidity(bme280_dev_t *dev, int32_t adc_H, int32_t t_fine);
+
+/**
+ * @brief Read and compensate all values (T, P, H).
+ * @param[in]  dev   Device handle
+ * @param[out] data  Compensated results
+ */
+bme280_status_t bme280_read_all(bme280_dev_t *dev, bme280_data_t *data);
+
+/**
+ * @brief Read only temperature.
+ * @param[in]  dev   Device handle
+ * @param[out] data  Output (temperature_c updated)
+ */
+bme280_status_t bme280_read_temperature(bme280_dev_t *dev, bme280_data_t *data);
+
+/**
+ * @brief Read only pressure.
+ * @param[in]  dev   Device handle
+ * @param[out] data  Output (pressure_pa updated)
+ */
+bme280_status_t bme280_read_pressure(bme280_dev_t *dev, bme280_data_t *data);
+
+/**
+ * @brief Read only humidity.
+ * @param[in]  dev   Device handle
+ * @param[out] data  Output (humidity_rh updated)
+ */
+bme280_status_t bme280_read_humidity(bme280_dev_t *dev, bme280_data_t *data);
+
+/**
+ * @brief Read device ID (0x60 expected).
+ * @param[in]  dev      Device handle
+ * @param[out] chip_id  Returned ID
+ */
+bme280_status_t bme280_read_id(bme280_dev_t *dev, uint8_t *chip_id);
+
+/**
+ * @brief Issue a soft reset.
+ * @param[in] dev  Device handle
+ */
+bme280_status_t bme280_soft_reset(bme280_dev_t *dev);
+
+/**
+ * @brief Put device into sleep mode.
+ * @param[in] dev  Device handle
+ */
+bme280_status_t bme280_sleep(bme280_dev_t *dev);
+
+/**
+ * @brief Wake device into normal mode.
+ * @param[in] dev  Device handle
+ */
+bme280_status_t bme280_wakeup(bme280_dev_t *dev);
+
+#endif /* BME280_INC_BME280_H_ */
