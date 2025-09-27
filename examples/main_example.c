@@ -2,25 +2,28 @@
  * main_example.c
  *
  * Example usage of BME280 driver
- * using custom I2C/GPIO/RCC drivers
+ *
+ * Tested on: STM32F407 (custom drivers for RCC, GPIO, I2C, SysTick)
  */
 
 #include "stm32f407xx.h"
 #include "RCC.h"
 #include "GPIO.h"
 #include "I2C.h"
+#include "Systick.h"
 #include "bme280.h"
+#include <stdio.h>
+
+/* -------- System clock (Hz) -------- */
+uint32_t SystemCoreClock = 16000000U;  // HSI default 16 MHz
 
 /* -------- I2C handle -------- */
 static I2C_HandleTypeDef_t hi2c1;
 
-/* -------- Delay function (simple, blocking) -------- */
-static void platform_delay_ms(uint32_t ms)
-{
-    for (volatile uint32_t i = 0; i < (ms * 8000); i++);
-}
+/* -------- SysTick handle -------- */
+static SYSTICK_HandleTypeDef_t hsystick;
 
-/* -------- I2C wrapper functions (BME280 hooks) -------- */
+/* -------- I2C wrapper functions -------- */
 static int32_t platform_i2c_read(uint8_t dev, uint8_t reg, uint8_t *buf, uint16_t len)
 {
     if (I2C_MemRead(&hi2c1, dev, reg, buf, (uint8_t)len) != STATUS_OK) {
@@ -37,18 +40,24 @@ static int32_t platform_i2c_write(uint8_t dev, uint8_t reg, const uint8_t *buf, 
     return BME280_OK;
 }
 
-/* -------- I2C init helpers -------- */
+/* -------- Delay wrapper -------- */
+static void platform_delay_ms(uint32_t ms)
+{
+    SysTick_Delay_ms(ms);
+}
+
+/* -------- Init functions -------- */
 static void I2C1_InitPins(void)
 {
     RCC_GPIOB_CLK_ENABLE();
 
     GPIO_InitTypeDef_t I2C_Pins = {0};
-    I2C_Pins.pinNumber  = (GPIO_PIN_6 | GPIO_PIN_7);  // PB6=SCL, PB7=SDA
+    I2C_Pins.pinNumber  = (GPIO_PIN_6 | GPIO_PIN_7);  // PB6 = SCL, PB7 = SDA
     I2C_Pins.Mode       = GPIO_MODE_AF;
     I2C_Pins.Otype      = GPIO_OTYPE_OD;
     I2C_Pins.PuPd       = GPIO_PULLUP;
     I2C_Pins.Speed      = GPIO_SPEED_HIGH;
-    I2C_Pins.Alternate  = GPIO_AF4_I2C1;  // AF4 = I2C1
+    I2C_Pins.Alternate  = GPIO_AF4_I2C1;              // AF4 = I2C1
 
     GPIO_Init(GPIOB, &I2C_Pins);
 }
@@ -67,6 +76,16 @@ static void I2C1_InitPeripheral(void)
     I2C_Init(&hi2c1);
 }
 
+static void SysTick_InitConfig(void)
+{
+    hsystick.tick_hz       = 1000U;                 // 1 ms tick
+    hsystick.clksource     = SYSTICK_CLKSRC_AHB;    // AHB clock
+    hsystick.use_interrupt = 1U;                    // enable IRQ
+    hsystick.nvic_priority = 0xF;                   // lowest priority
+
+    SysTick_Init(&hsystick);
+}
+
 /* -------- Main -------- */
 int main(void)
 {
@@ -74,10 +93,13 @@ int main(void)
     I2C1_InitPins();
     I2C1_InitPeripheral();
 
+    /* Init SysTick */
+    SysTick_InitConfig();
+
     /* BME280 handle + default config */
     bme280_dev_t bme = {0};
 
-    bme.dev_addr = BME280_I2C_ADDR_SD0_LOW; /* 0x76 or 0x77 */
+    bme.dev_addr = BME280_I2C_ADDR_SDO_LOW; /* 0x76 */
     bme.osr_t    = BME280_OSR_T_2X;
     bme.osr_p    = BME280_OSR_P_4X;
     bme.osr_h    = BME280_OSR_H_1X;
@@ -88,14 +110,14 @@ int main(void)
     /* Assign hooks */
     bme.i2c_read  = platform_i2c_read;
     bme.i2c_write = platform_i2c_write;
-    bme.delay_ms  = platform_delay_ms;
+    bme.delay_ms  = SysTick_Delay_ms;
 
     /* Small delay before init */
-    platform_delay_ms(10);
+    SysTick_Delay_ms(10);
 
     /* Init (ID check + reset + config + calibration load) */
     if (bme280_init(&bme) != BME280_OK) {
-        while (1);  /* error: set breakpoint here */
+        while (1);  /* error */
     }
 
     bme280_data_t data;
