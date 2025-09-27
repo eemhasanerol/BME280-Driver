@@ -103,13 +103,11 @@ int main(void)
     {
         if (bme280_read_all(&bme, &data) == BME280_OK) {
             printf("Temp: %.2f °C | Pressure: %.2f Pa | Humidity: %.2f %%RH\r\n",
-                   data.temperature,
-                   data.pressure,
-                   data.humidity);
+                   data.temperature_c,
+                   data.pressure_pa,
+                   data.humidity_rh);
         }
 
-
-        platform_delay_ms(1000);
+    platform_delay_ms(1000);
     }
-
 }
