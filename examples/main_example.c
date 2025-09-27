@@ -108,6 +108,6 @@ int main(void)
                    data.humidity_rh);
         }
 
-    platform_delay_ms(1000);
+        platform_delay_ms(1000);
     }
 }
