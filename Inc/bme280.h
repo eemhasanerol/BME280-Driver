@@ -1,7 +1,19 @@
-/*
- * bme280.h
- * High-level driver API for BME280 sensor
- */
+/**
+  ******************************************************************************
+  * @file    bme280.h
+  * @author  Hasan Erol
+  * @brief   High-level API for Bosch BME280 sensor
+  ******************************************************************************
+  * @attention
+  * This file provides:
+  *   - Data structures for device handle and sensor data
+  *   - Function prototypes for initialization and configuration
+  *   - Functions to read temperature, pressure, and humidity data
+  *
+  * For usage examples, see README.md
+  ******************************************************************************
+  */
+
 
 #ifndef BME280_INC_BME280_H_
 #define BME280_INC_BME280_H_
