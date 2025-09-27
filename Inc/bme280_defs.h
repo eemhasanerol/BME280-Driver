@@ -1,9 +1,17 @@
-/*
- * bme280_defs.h
- *
- * Option macros and register map for Bosch BME280 sensor.
- * Reference: Bosch BME280 Datasheet, Rev 1.6
- */
+/**
+  ******************************************************************************
+  * @file    bme280_defs.h
+  * @author  Hasan Erol
+  * @brief   Register map and option macros for Bosch BME280 sensor
+  ******************************************************************************
+  * @attention
+  * Reference: Bosch BME280 Datasheet, Rev 1.6
+  *
+  * This file provides all register addresses, bit masks, and configuration
+  * options for the BME280 temperature, pressure, and humidity sensor.
+  ******************************************************************************
+  */
+
 
 #ifndef INC_BME280_DEFS_H_
 #define INC_BME280_DEFS_H_
