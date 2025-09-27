@@ -102,11 +102,12 @@ int main(void)
     while (1)
     {
         if (bme280_read_all(&bme, &data) == BME280_OK) {
-            printf("Temp: %ld °C | Pressure: %lu Pa | Humidity: %lu %%RH\n",
+            printf("Temp: %.2f °C | Pressure: %.2f Pa | Humidity: %.2f %%RH\r\n",
                    data.temperature,
                    data.pressure,
                    data.humidity);
         }
+
 
         platform_delay_ms(1000);
     }
