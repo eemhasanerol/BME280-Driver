@@ -1,5 +1,16 @@
-#include "bme280.h"
+/**
+  ******************************************************************************
+  * @file    bme280.c
+  * @author  Hasan Erol
+  * @brief   Source file for Bosch BME280 driver
+  ******************************************************************************
+  * @attention
+  * This file contains the implementation of initialization, calibration,
+  * compensation, and data readout functions for the BME280 sensor.
+  ******************************************************************************
+  */
 
+#include "bme280.h"
 
 bme280_status_t bme280_init(bme280_dev_t *dev)
 {
