@@ -77,7 +77,7 @@ int main(void)
     /* BME280 handle + default config */
     bme280_dev_t bme = {0};
 
-    bme.dev_addr = BME280_I2C_ADDR_PRIM; /* 0x76 or 0x77 */
+    bme.dev_addr = BME280_I2C_ADDR_SD0_LOW; /* 0x76 or 0x77 */
     bme.osr_t    = BME280_OSR_T_2X;
     bme.osr_p    = BME280_OSR_P_4X;
     bme.osr_h    = BME280_OSR_H_1X;
