@@ -41,14 +41,15 @@ typedef enum {
 /* Device configuration / handle                                              */
 /* -------------------------------------------------------------------------- */
 typedef struct {
-    uint8_t dev_addr;  /* 0x76 or 0x77 */
+    uint8_t dev_addr;  /*!< I2C address: @ref BME280_I2C_ADDR_SDO_LOW or
+                            @ref BME280_I2C_ADDR_SDO_HIGH */
 
-    uint8_t osr_t;     /*!< Temp oversampling.    Use @ref BME280_OSR_T_* */
-    uint8_t osr_p;     /*!< Pressure oversampling.Use @ref BME280_OSR_P_* */
-    uint8_t osr_h;     /*!< Humidity oversampling.Use @ref BME280_OSR_H_* */
-    uint8_t filter;    /*!< IIR filter.           Use @ref BME280_FILTER_* */
-    uint8_t standby;   /*!< Standby time.         Use @ref BME280_STBY_* */
-    uint8_t mode;      /*!< Power mode.           Use @ref BME280_MODE_* */
+    uint8_t osr_t;     /*!< Temp oversampling.    @ref BME280_OSR_T  */
+    uint8_t osr_p;     /*!< Pressure oversampling @ref BME280_OSR_P  */
+    uint8_t osr_h;     /*!< Humidity oversampling @ref BME280_OSR_H  */
+    uint8_t filter;    /*!< IIR filter.           @ref BME280_FILTER */
+    uint8_t standby;   /*!< Standby time.         @ref BME280_STBY   */
+    uint8_t mode;      /*!< Power mode.           @ref BME280_MODE   */
 
     /* I2C callbacks */
     int32_t (*i2c_read)(uint8_t dev, uint8_t reg, uint8_t *buf, uint16_t len);
