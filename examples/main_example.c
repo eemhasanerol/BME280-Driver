@@ -80,7 +80,7 @@ static void SysTick_InitConfig(void)
 {
     hsystick.tick_hz       = 1000U;                 // 1 ms tick
     hsystick.clksource     = SYSTICK_CLKSRC_AHB;    // AHB clock
-    hsystick.use_interrupt = 1U;                    // enable IRQ
+    hsystick.use_interrupt = SYSTICK_INT_ENABLE;    // enable IRQ
     hsystick.nvic_priority = 0xF;                   // lowest priority
 
     SysTick_Init(&hsystick);
