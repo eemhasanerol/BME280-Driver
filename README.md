@@ -1,15 +1,11 @@
-# Embedded Sensor Drivers (C)
+# MPU6050 Driver (C)
 
-Lightweight C driver libraries for popular sensors, tested on **STM32F407** with custom low-level drivers (RCC, GPIO, I2C).  
-Includes **MPU6050 (IMU)** and **BME280 (environmental sensor)**.
+A simple C driver library for the **MPU6050 IMU sensor** (accelerometer + gyroscope + temperature).  
+Tested on **STM32F407** with custom low-level drivers.
 
 ---
 
-## 📌 MPU6050 Driver (C)
-
-A simple C driver library for the **MPU6050 IMU sensor** (accelerometer + gyroscope + temperature).
-
-### Features
+## 📌 Features
 - I²C communication (with user-provided low-level functions)  
 - Read **accelerometer** data (X, Y, Z)  
 - Read **gyroscope** data (X, Y, Z)  
@@ -21,7 +17,9 @@ A simple C driver library for the **MPU6050 IMU sensor** (accelerometer + gyrosc
   - Output sample rate  
   - Sleep mode and temperature sensor enable/disable  
 
-### Usage Example
+---
+
+## 📌 Usage Example
 ```c
 #include "mpu6050.h"
 
