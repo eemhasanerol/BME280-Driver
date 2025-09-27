@@ -14,8 +14,25 @@ Tested on **STM32F407** with custom low-level drivers.
   - Standby time  
   - Power modes (sleep, forced, normal)  
 
-## Usage Example
+## Platform Hooks
+To use this driver, you must provide I²C read/write and delay functions:
+
 ```c
+static int32_t platform_i2c_read(uint8_t dev, uint8_t reg, uint8_t *buf, uint16_t len)
+{
+    return (I2C_MemRead(&hi2c1, dev, reg, buf, len) == STATUS_OK) ? BME280_OK : BME280_E_COMM;
+}
+
+static int32_t platform_i2c_write(uint8_t dev, uint8_t reg, const uint8_t *buf, uint16_t len)
+{
+    return (I2C_MemWrite(&hi2c1, dev, reg, buf, len) == STATUS_OK) ? BME280_OK : BME280_E_COMM;
+}
+
+static void platform_delay_ms(uint32_t ms)
+{
+    for (volatile uint32_t i = 0; i < (ms * 8000); i++);
+}
+
 #include "bme280.h"
 
 bme280_dev_t bme = {
