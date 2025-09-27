@@ -1,63 +1,49 @@
-# BME280 Driver (C)
+# Embedded Sensor Drivers (C)
 
-A lightweight C driver library for the **Bosch BME280 sensor** (temperature, pressure, humidity).  
-Tested on **STM32F407** with custom low-level drivers.
+Lightweight C driver libraries for popular sensors, tested on **STM32F407** with custom low-level drivers (RCC, GPIO, I2C).  
+Includes **MPU6050 (IMU)** and **BME280 (environmental sensor)**.
 
-## Features
+---
+
+## 📌 MPU6050 Driver (C)
+
+A simple C driver library for the **MPU6050 IMU sensor** (accelerometer + gyroscope + temperature).
+
+### Features
 - I²C communication (with user-provided low-level functions)  
+- Read **accelerometer** data (X, Y, Z)  
+- Read **gyroscope** data (X, Y, Z)  
 - Read **temperature** (°C)  
-- Read **pressure** (Pa)  
-- Read **humidity** (%RH)  
 - Configuration options:  
-  - Oversampling (temperature, pressure, humidity)  
-  - IIR filter  
-  - Standby time  
-  - Power modes (sleep, forced, normal)  
+  - Accelerometer full-scale range: ±2g / ±4g / ±8g / ±16g  
+  - Gyroscope full-scale range: ±250 / ±500 / ±1000 / ±2000 dps  
+  - Digital Low-Pass Filter (DLPF)  
+  - Output sample rate  
+  - Sleep mode and temperature sensor enable/disable  
 
-## Platform Hooks
-To use this driver, you must provide I²C read/write and delay functions:
-
+### Usage Example
 ```c
-static int32_t platform_i2c_read(uint8_t dev, uint8_t reg, uint8_t *buf, uint16_t len)
-{
-    return (I2C_MemRead(&hi2c1, dev, reg, buf, len) == STATUS_OK) ? BME280_OK : BME280_E_COMM;
-}
+#include "mpu6050.h"
 
-static int32_t platform_i2c_write(uint8_t dev, uint8_t reg, const uint8_t *buf, uint16_t len)
-{
-    return (I2C_MemWrite(&hi2c1, dev, reg, buf, len) == STATUS_OK) ? BME280_OK : BME280_E_COMM;
-}
-
-static void platform_delay_ms(uint32_t ms)
-{
-    for (volatile uint32_t i = 0; i < (ms * 8000); i++);
-}
-
-#include "bme280.h"
-
-bme280_dev_t bme = {
-    .dev_addr  = BME280_I2C_ADDR_PRIM,   // 0x76 (default) or BME280_I2C_ADDR_SEC (0x77)
-    .osr_t     = BME280_OSR_T_2X,
-    .osr_p     = BME280_OSR_P_4X,
-    .osr_h     = BME280_OSR_H_1X,
-    .filter    = BME280_FILTER_4,
-    .standby   = BME280_STBY_1000_MS,
-    .mode      = BME280_MODE_NORMAL,
-    .i2c_read  = platform_i2c_read,
-    .i2c_write = platform_i2c_write,
-    .delay_ms  = platform_delay_ms
+mpu6050_dev_t mpu = {
+    .dev_addr    = MPU6050_I2C_ADDR_AD0_LOW,  // 0x68 (AD0=GND) or MPU6050_I2C_ADDR_AD0_HIGH (0x69)
+    .accel_range = MPU6050_ACCEL_RANGE_2G,
+    .gyro_range  = MPU6050_GYRO_RANGE_250DPS,
+    .dlpf_cfg    = MPU6050_DLPF_CFG_3,
+    .sample_rate = MPU6050_SMPLRT_50HZ,
+    .i2c_read    = platform_i2c_read,
+    .i2c_write   = platform_i2c_write
 };
 
-bme280_data_t data;
+mpu6050_data_t data;
 
-if (bme280_init(&bme) == BME280_OK) {
+if (mpu6050_init(&mpu) == MPU6050_OK) {
     while (1) {
-        if (bme280_read_all(&bme, &data) == BME280_OK) {
-            printf("Temp=%.2f °C | Pressure=%.2f Pa | Humidity=%.2f %%RH\n",
-                   data.temperature_c,
-                   data.pressure_pa,
-                   data.humidity_rh);
+        if (mpu6050_read_all(&mpu, &data) == MPU6050_OK) {
+            printf("AX=%.2f AY=%.2f AZ=%.2f | GX=%.2f GY=%.2f GZ=%.2f | Temp=%.2f\n",
+                   data.accel_g[0], data.accel_g[1], data.accel_g[2],
+                   data.gyro_dps[0], data.gyro_dps[1], data.gyro_dps[2],
+                   data.temp_c);
         }
-        platform_delay_ms(1000);
     }
 }
