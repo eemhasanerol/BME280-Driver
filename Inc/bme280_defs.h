@@ -40,6 +40,19 @@
 #define BME280_CHIP_ID          (0x60)  /*!< Expected chip ID */
 #define BME280_RESET_VALUE      (0xB6)  /*!< Soft reset command */
 
+/* -------------------------------------------------------------------------- */
+/* I2C addresses (depends on SDO pin state)                                   */
+/* -------------------------------------------------------------------------- */
+/** @defgroup BME280_I2C_ADDR I2C device addresses
+ *  @brief I2C address options depending on SDO pin
+ *  @{
+ */
+#define BME280_I2C_ADDR_SDO_LOW   (0x76U)  /*!< SDO = 0 -> I2C address 0x76 */
+#define BME280_I2C_ADDR_SDO_HIGH  (0x77U)  /*!< SDO = 1 -> I2C address 0x77 */
+/** @} */
+
+
+
 
 /* -------------------------------------------------------------------------- */
 /* Power modes                                                                */
