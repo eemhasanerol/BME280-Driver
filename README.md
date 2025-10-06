@@ -1,8 +1,8 @@
 # 🌡️ BME280 Driver (C)
 
-> Lightweight and platform-independent C driver for the **Bosch BME280** environmental sensor  
-> (temperature, pressure, and humidity).  
-> Tested on **STM32F407** with custom low-level drivers.
+ Lightweight and platform-independent C driver for the **Bosch BME280** environmental sensor  
+ (temperature, pressure, and humidity).  
+ Tested on **STM32F407** with custom low-level drivers.
 
 ---
 
