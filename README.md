@@ -3,7 +3,7 @@
 A simple C driver library for the **MPU6050 IMU sensor** (accelerometer + gyroscope + temperature).  
 Tested on **STM32F407** with custom low-level drivers.
 
----
+--- 
 
 ## 📌 Features
 - I²C communication (with user-provided low-level functions)  
@@ -20,8 +20,9 @@ Tested on **STM32F407** with custom low-level drivers.
 ---
 
 ## 📌 Usage Example
-```
+```c
 #include "mpu6050.h"
+// Platform-specific I²C read/write functions must be provided by the user
 
 mpu6050_dev_t mpu = {
     .dev_addr    = MPU6050_I2C_ADDR_AD0_LOW,  // 0x68 (AD0=GND) or MPU6050_I2C_ADDR_AD0_HIGH (0x69)
