@@ -20,7 +20,7 @@ Tested on **STM32F407** with custom low-level drivers.
 ---
 
 ## 📌 Usage Example
-```c
+```
 #include "mpu6050.h"
 
 mpu6050_dev_t mpu = {
