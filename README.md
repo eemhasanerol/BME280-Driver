@@ -1,47 +1,25 @@
-BME280 Driver (C)
+# 🌡️ BME280 Driver (C)
 
-A lightweight C driver library for the Bosch BME280 sensor (temperature, pressure, humidity).
-Tested on STM32F407 with custom low-level drivers.
+> Lightweight and platform-independent C driver for the **Bosch BME280** environmental sensor  
+> (temperature, pressure, and humidity).  
+> Tested on **STM32F407** with custom low-level drivers.
 
-Features
+---
 
-I²C communication (with user-provided low-level functions)
+## 📌 Features
+| Feature | Description |
+|----------|--------------|
+| Communication | I²C (user-provided low-level read/write functions) |
+| Temperature | Read ambient temperature (°C) |
+| Pressure | Read air pressure (Pa) |
+| Humidity | Read relative humidity (%RH) |
+| Configuration | Oversampling, IIR filter, standby time, and power modes |
 
-Read temperature (°C)
+---
 
-Read pressure (Pa)
-
-Read humidity (%RH)
-
-Configuration options:
-
-Oversampling (temperature, pressure, humidity)
-
-IIR filter
-
-Standby time
-
-Power modes (sleep, forced, normal)
-
-Usage Example
-# BME280 Driver (C)
-
-A lightweight C driver library for the **Bosch BME280 sensor** (temperature, pressure, humidity).  
-Tested on **STM32F407** with custom low-level drivers.
-
-## Features
-- I²C communication (with user-provided low-level functions)  
-- Read **temperature** (°C)  
-- Read **pressure** (Pa)  
-- Read **humidity** (%RH)  
-- Configuration options:  
-  - Oversampling (temperature, pressure, humidity)  
-  - IIR filter  
-  - Standby time  
-  - Power modes (sleep, forced, normal)  
-
-## Usage Example
+## 🧠 Usage Example
 ```c
+/* Platform-specific I²C read/write functions must be provided by the user */ 
 #include "bme280.h"
 
 bme280_dev_t bme = {
