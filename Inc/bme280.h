@@ -80,13 +80,6 @@ typedef struct {
 /* -------------------------------------------------------------------------- */
 
 bme280_status_t bme280_init(bme280_dev_t *dev);
-
-/**
- * @brief Load calibration coefficients into dev->calib.
- * @param[in] dev  Device handle
- * @retval STATUS_OK     Success
- * @retval STATUS_ERROR  Comm or null pointer
- */
 bme280_status_t bme280_load_calibration(bme280_dev_t *dev);
 
 /**
