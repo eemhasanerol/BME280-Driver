@@ -124,6 +124,12 @@ bme280_status_t bme280_load_calibration(bme280_dev_t *dev)
     return BME280_OK;
 }
 
+/**
+ * @brief Read raw uncompensated sensor values.
+ * @param[in]  dev  Device handle
+ * @param[out] raw  Raw data struct
+ * @retval bme280_status_t Function result (BME280_OK on success, otherwise an error code)
+ */
 bme280_status_t bme280_read_raw(bme280_dev_t *dev, bme280_raw_t *raw)
 {
     if (!dev || !raw) {
@@ -151,6 +157,13 @@ bme280_status_t bme280_read_raw(bme280_dev_t *dev, bme280_raw_t *raw)
 }
 
 
+/**
+ * @brief Compensate raw temperature.
+ * @param[in]  dev    Device handle
+ * @param[in]  adc_T  Raw temperature (20-bit)
+ * @param[out] t_fine Fine temperature for P/H
+ * @return Temperature in 0.01 °C
+ */
 int32_t bme280_compensate_temperature(bme280_dev_t *dev, int32_t adc_T, int32_t *t_fine)
 {
     int32_t var1, var2, T;
@@ -169,6 +182,13 @@ int32_t bme280_compensate_temperature(bme280_dev_t *dev, int32_t adc_T, int32_t 
 }
 
 
+/**
+ * @brief Compensate raw pressure.
+ * @param[in] dev    Device handle
+ * @param[in] adc_P  Raw pressure (20-bit)
+ * @param[in] t_fine Fine temperature
+ * @return Pressure in Pa (Q24.8 format)
+ */
 uint32_t bme280_compensate_pressure(bme280_dev_t *dev, int32_t adc_P, int32_t t_fine)
 {
     int64_t var1, var2, p;
@@ -196,7 +216,13 @@ uint32_t bme280_compensate_pressure(bme280_dev_t *dev, int32_t adc_P, int32_t t_
     return (uint32_t)p; /* Pa (Q24.8 format) */
 }
 
-
+/**
+ * @brief Compensate raw humidity.
+ * @param[in] dev    Device handle
+ * @param[in] adc_H  Raw humidity (16-bit)
+ * @param[in] t_fine Fine temperature
+ * @return Humidity in %RH (Q22.10 format)
+ */
 uint32_t bme280_compensate_humidity(bme280_dev_t *dev, int32_t adc_H, int32_t t_fine)
 {
     int32_t v_x1_u32r;
@@ -223,6 +249,12 @@ uint32_t bme280_compensate_humidity(bme280_dev_t *dev, int32_t adc_H, int32_t t_
 }
 
 
+/**
+ * @brief Read and compensate all values (T, P, H).
+ * @param[in]  dev   Device handle
+ * @param[out] data  Compensated results
+ * @retval bme280_status_t Function result (BME280_OK on success, otherwise an error code)
+ */
 bme280_status_t bme280_read_all(bme280_dev_t *dev, bme280_data_t *data)
 {
     if (!dev || !data) {
@@ -250,7 +282,12 @@ bme280_status_t bme280_read_all(bme280_dev_t *dev, bme280_data_t *data)
     return BME280_OK;
 }
 
-
+/**
+ * @brief Read only temperature.
+ * @param[in]  dev   Device handle
+ * @param[out] data  Output (temperature_c updated)
+ * @retval bme280_status_t Function result (BME280_OK on success, otherwise an error code)
+ */
 bme280_status_t bme280_read_temperature(bme280_dev_t *dev, bme280_data_t *data)
 {
     if (!dev || !data) {
@@ -271,7 +308,12 @@ bme280_status_t bme280_read_temperature(bme280_dev_t *dev, bme280_data_t *data)
     return BME280_OK;
 }
 
-
+/**
+ * @brief Read only pressure.
+ * @param[in]  dev   Device handle
+ * @param[out] data  Output (pressure_pa updated)
+ * @retval bme280_status_t Function result (BME280_OK on success, otherwise an error code)
+ */
 bme280_status_t bme280_read_pressure(bme280_dev_t *dev, bme280_data_t *data)
 {
     if (!dev || !data) {
@@ -296,7 +338,12 @@ bme280_status_t bme280_read_pressure(bme280_dev_t *dev, bme280_data_t *data)
     return BME280_OK;
 }
 
-
+/**
+ * @brief Read only humidity.
+ * @param[in]  dev   Device handle
+ * @param[out] data  Output (humidity_rh updated)
+ * @retval bme280_status_t Function result (BME280_OK on success, otherwise an error code)
+ */
 bme280_status_t bme280_read_humidity(bme280_dev_t *dev, bme280_data_t *data)
 {
     if (!dev || !data) {
@@ -321,7 +368,12 @@ bme280_status_t bme280_read_humidity(bme280_dev_t *dev, bme280_data_t *data)
     return BME280_OK;
 }
 
-
+/**
+ * @brief Read device ID (0x60 expected).
+ * @param[in]  dev      Device handle
+ * @param[out] chip_id  Returned ID
+ * @retval bme280_status_t Function result (BME280_OK on success, otherwise an error code)
+ */
 bme280_status_t bme280_read_id(bme280_dev_t *dev, uint8_t *chip_id)
 {
     if (!dev || !chip_id) {
@@ -335,7 +387,11 @@ bme280_status_t bme280_read_id(bme280_dev_t *dev, uint8_t *chip_id)
     return BME280_OK;
 }
 
-
+/**
+ * @brief Issue a soft reset.
+ * @param[in] dev  Device handle
+ * @retval bme280_status_t Function result (BME280_OK on success, otherwise an error code)
+ */
 bme280_status_t bme280_soft_reset(bme280_dev_t *dev)
 {
     if (!dev) {
@@ -354,7 +410,11 @@ bme280_status_t bme280_soft_reset(bme280_dev_t *dev)
     return BME280_OK;
 }
 
-
+/**
+ * @brief Put device into sleep mode.
+ * @param[in] dev  Device handle
+ * @retval bme280_status_t Function result (BME280_OK on success, otherwise an error code)
+ */
 bme280_status_t bme280_sleep(bme280_dev_t *dev)
 {
     if (!dev) {
@@ -374,7 +434,11 @@ bme280_status_t bme280_sleep(bme280_dev_t *dev)
     return BME280_OK;
 }
 
-
+/**
+ * @brief Wake device into normal mode.
+ * @param[in] dev  Device handle
+ * @retval bme280_status_t Function result (BME280_OK on success, otherwise an error code)
+ */
 bme280_status_t bme280_wakeup(bme280_dev_t *dev)
 {
     if (!dev) {
