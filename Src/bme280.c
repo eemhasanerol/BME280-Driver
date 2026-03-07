@@ -16,8 +16,7 @@
 /**
  * @brief Initialize BME280 (reset, config, oversampling, filter).
  * @param[in] dev  Device handle
- * @retval STATUS_OK     Success
- * @retval STATUS_ERROR  Null or wrong chip ID
+ * @retval bme280_status_t Function result (BME280_OK on success, otherwise an error code)
  */
 bme280_status_t bme280_init(bme280_dev_t *dev)
 {
@@ -74,8 +73,7 @@ bme280_status_t bme280_init(bme280_dev_t *dev)
 /**
  * @brief Load calibration coefficients into dev->calib.
  * @param[in] dev  Device handle
- * @retval STATUS_OK     Success
- * @retval STATUS_ERROR  Comm or null pointer
+ * @retval bme280_status_t Function result (BME280_OK on success, otherwise an error code) 
  */
 bme280_status_t bme280_load_calibration(bme280_dev_t *dev)
 {
