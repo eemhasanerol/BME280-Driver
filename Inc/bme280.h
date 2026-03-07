@@ -79,12 +79,6 @@ typedef struct {
 /* API Prototypes                                                             */
 /* -------------------------------------------------------------------------- */
 
-/**
- * @brief Initialize BME280 (reset, config, oversampling, filter).
- * @param[in] dev  Device handle
- * @retval STATUS_OK     Success
- * @retval STATUS_ERROR  Null or wrong chip ID
- */
 bme280_status_t bme280_init(bme280_dev_t *dev);
 
 /**
